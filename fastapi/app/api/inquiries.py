@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.auth import require_admin
 from app.database import get_db
 from app.models.inquiry import Inquiry, InquiryStatus
 from app.schemas.inquiry import (
@@ -46,8 +47,9 @@ async def list_inquiries(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
+    _admin: dict = Depends(require_admin),
 ):
-    """查询询盘列表（管理员端点）"""
+    """查询询盘列表（管理员端点，需认证）"""
     base_query = select(Inquiry)
     count_query = select(func.count()).select_from(Inquiry)
 
@@ -78,8 +80,9 @@ async def list_inquiries(
 async def get_inquiry(
     inquiry_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
+    _admin: dict = Depends(require_admin),
 ):
-    """查询询盘详情"""
+    """查询询盘详情（管理员端点，需认证）"""
     result = await db.execute(select(Inquiry).where(Inquiry.id == inquiry_id))
     inquiry = result.scalar_one_or_none()
 
@@ -94,8 +97,9 @@ async def update_inquiry_status(
     inquiry_id: uuid.UUID,
     body: InquiryStatusUpdate,
     db: AsyncSession = Depends(get_db),
+    _admin: dict = Depends(require_admin),
 ):
-    """更新询盘状态"""
+    """更新询盘状态（管理员端点，需认证）"""
     result = await db.execute(select(Inquiry).where(Inquiry.id == inquiry_id))
     inquiry = result.scalar_one_or_none()
 
@@ -115,8 +119,9 @@ async def update_inquiry_status(
 async def delete_inquiry(
     inquiry_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
+    _admin: dict = Depends(require_admin),
 ):
-    """删除询盘（GDPR Right to be forgotten）"""
+    """删除询盘（GDPR Right to be forgotten，管理员端点，需认证）"""
     result = await db.execute(select(Inquiry).where(Inquiry.id == inquiry_id))
     inquiry = result.scalar_one_or_none()
 

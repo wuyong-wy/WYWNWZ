@@ -12,3 +12,4 @@ redis==5.2.*
 python-multipart==0.0.*
 sentry-sdk[fastapi]==2.*
 structlog==24.*
+PyJWT==2.9.*

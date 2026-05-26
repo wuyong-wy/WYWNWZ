@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, usePathname, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Menu, X, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,9 +13,18 @@ const LOCALES = [
 
 export function Header() {
   const t = useTranslations("nav");
+  const common = useTranslations("common");
   const locale = useLocale();
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+
+  /** 切换语言时保留当前路径：替换 locale 前缀 */
+  function getLocaleHref(targetLocale: string): string {
+    const segments = pathname.split("/");
+    segments[1] = targetLocale;
+    return segments.join("/") || `/${targetLocale}`;
+  }
 
   const navLinks = [
     { href: `/${locale}`, label: t("home") },
@@ -29,7 +38,7 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         {/* Logo */}
         <Link href={`/${locale}`} className="text-xl font-bold text-[var(--color-primary)]">
-          {useTranslations("common")("siteName")}
+          {common("siteName")}
         </Link>
 
         {/* Desktop Nav */}
@@ -61,7 +70,7 @@ export function Header() {
                 {LOCALES.map((l) => (
                   <Link
                     key={l.code}
-                    href={`/${l.code}`}
+                    href={getLocaleHref(l.code)}
                     onClick={() => setLangOpen(false)}
                     className={cn(
                       "block px-3 py-2 text-sm hover:bg-[var(--color-accent)]",

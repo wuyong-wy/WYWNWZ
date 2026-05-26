@@ -9,7 +9,7 @@ export default async function ProductsPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const data = await getProducts({ first: 20 }).catch(() => ({
+  const data = await getProducts({ first: 20, locale }).catch(() => ({
     products: [],
     hasNextPage: false,
     endCursor: null,

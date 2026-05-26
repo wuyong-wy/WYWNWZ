@@ -1,5 +1,6 @@
 /**
  * Saleor GraphQL 客户端 — 使用 graphql-request
+ * 支持动态 locale 多语言翻译
  */
 
 import { GraphQLClient } from "graphql-request";
@@ -8,16 +9,30 @@ const SALEOR_API_URL =
   process.env.NEXT_PUBLIC_SALEOR_API_URL || "http://localhost:8000/graphql/";
 const SALEOR_CHANNEL = process.env.NEXT_PUBLIC_SALEOR_CHANNEL || "default-channel";
 
-export const saleorClient = new GraphQLClient(SALEOR_API_URL, {
-  headers: {
-    "Accept-Language": "en",
-  },
-});
+/** locale → Saleor LanguageCodeEnum 映射 */
+const LOCALE_TO_LANG_CODE: Record<string, string> = {
+  en: "EN",
+  zh: "ZH",
+  es: "ES",
+  ar: "AR",
+  fr: "FR",
+  de: "DE",
+  ru: "RU",
+  pt: "PT",
+  ja: "JA",
+  ko: "KO",
+};
 
-// === GraphQL 查询 ===
+function getLangCode(locale: string): string {
+  return LOCALE_TO_LANG_CODE[locale] || "EN";
+}
 
-/** 产品公共字段 Fragment */
-export const PRODUCT_FRAGMENT = `
+export const saleorClient = new GraphQLClient(SALEOR_API_URL);
+
+// === GraphQL 查询（使用变量化的 languageCode）===
+
+/** 产品公共字段 Fragment — 接受 $langCode 变量 */
+export const PRODUCT_FRAGMENT = (langCode: string) => `
   fragment ProductFields on Product {
     id
     name
@@ -31,10 +46,13 @@ export const PRODUCT_FRAGMENT = `
       id
       name
       slug
+      translation(languageCode: ${langCode}) {
+        name
+      }
     }
     seoTitle
     seoDescription
-    translation(languageCode: EN) {
+    translation(languageCode: ${langCode}) {
       name
       description
       seoTitle
@@ -44,8 +62,8 @@ export const PRODUCT_FRAGMENT = `
 `;
 
 /** 产品列表查询 */
-export const PRODUCTS_QUERY = `
-  ${PRODUCT_FRAGMENT}
+export const PRODUCTS_QUERY = (langCode: string) => `
+  ${PRODUCT_FRAGMENT(langCode)}
   query Products($first: Int!, $after: String, $filter: ProductFilterInput, $sortBy: ProductOrder, $channel: String!) {
     products(first: $first, after: $after, filter: $filter, sortBy: $sortBy, channel: $channel) {
       edges {
@@ -64,8 +82,8 @@ export const PRODUCTS_QUERY = `
 `;
 
 /** 产品详情查询 */
-export const PRODUCT_DETAIL_QUERY = `
-  ${PRODUCT_FRAGMENT}
+export const PRODUCT_DETAIL_QUERY = (langCode: string) => `
+  ${PRODUCT_FRAGMENT(langCode)}
   query ProductDetail($slug: String!, $channel: String!) {
     product(slug: $slug, channel: $channel) {
       ...ProductFields
@@ -78,33 +96,28 @@ export const PRODUCT_DETAIL_QUERY = `
         attribute {
           name
           slug
-          translation(languageCode: EN) {
+          translation(languageCode: ${langCode}) {
             name
           }
         }
         values {
           name
           slug
+          translation(languageCode: ${langCode}) {
+            name
+          }
         }
       }
       variants {
         id
         name
-        attributes {
-          attribute {
-            name
-          }
-          values {
-            name
-          }
-        }
       }
     }
   }
 `;
 
 /** 分类列表查询 */
-export const CATEGORIES_QUERY = `
+export const CATEGORIES_QUERY = (langCode: string) => `
   query Categories($first: Int!) {
     categories(first: $first) {
       edges {
@@ -122,6 +135,12 @@ export const CATEGORIES_QUERY = `
           }
           seoTitle
           seoDescription
+          translation(languageCode: ${langCode}) {
+            name
+            description
+            seoTitle
+            seoDescription
+          }
         }
       }
     }
@@ -129,7 +148,7 @@ export const CATEGORIES_QUERY = `
 `;
 
 /** 分类详情查询 */
-export const CATEGORY_DETAIL_QUERY = `
+export const CATEGORY_DETAIL_QUERY = (langCode: string) => `
   query CategoryDetail($slug: String!, $first: Int!, $after: String, $channel: String!) {
     category(slug: $slug) {
       id
@@ -142,6 +161,12 @@ export const CATEGORY_DETAIL_QUERY = `
         url
         alt
       }
+      translation(languageCode: ${langCode}) {
+        name
+        description
+        seoTitle
+        seoDescription
+      }
       products(first: $first, after: $after, channel: $channel) {
         edges {
           node {
@@ -151,6 +176,9 @@ export const CATEGORY_DETAIL_QUERY = `
             thumbnail {
               url
               alt
+            }
+            translation(languageCode: ${langCode}) {
+              name
             }
           }
         }
@@ -171,10 +199,25 @@ export interface ProductThumbnail {
   alt: string | null;
 }
 
+export interface ProductTranslation {
+  name: string | null;
+  description: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+}
+
+export interface CategoryTranslation {
+  name: string | null;
+  description: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+}
+
 export interface ProductCategory {
   id: string;
   name: string;
   slug: string;
+  translation?: { name: string | null };
 }
 
 export interface Product {
@@ -186,13 +229,14 @@ export interface Product {
   category: ProductCategory | null;
   seoTitle: string | null;
   seoDescription: string | null;
+  translation?: ProductTranslation;
 }
 
 export interface ProductDetail extends Product {
   media: { url: string; alt: string | null; type: string }[];
   attributes: {
-    attribute: { name: string; slug: string };
-    values: { name: string; slug: string }[];
+    attribute: { name: string; slug: string; translation?: { name: string | null } };
+    values: { name: string; slug: string; translation?: { name: string | null } }[];
   }[];
 }
 
@@ -205,6 +249,35 @@ export interface Category {
   products: { totalCount: number };
   seoTitle: string | null;
   seoDescription: string | null;
+  translation?: CategoryTranslation;
+}
+
+export interface CategoryDetail extends Omit<Category, "products"> {
+  products: {
+    edges: { node: Product }[];
+    pageInfo: { hasNextPage: boolean; endCursor: string | null };
+    totalCount: number;
+  };
+}
+
+// === 辅助函数：获取翻译值，回退到主语言 ===
+
+export function t(product: Product, field: "name" | "description" | "seoTitle" | "seoDescription"): string | null {
+  const trans = product.translation;
+  if (field === "name") return trans?.name || product.name;
+  if (field === "description") return trans?.description || product.description;
+  if (field === "seoTitle") return trans?.seoTitle || product.seoTitle;
+  if (field === "seoDescription") return trans?.seoDescription || product.seoDescription;
+  return null;
+}
+
+export function tCategory(cat: Category, field: "name" | "description" | "seoTitle" | "seoDescription"): string | null {
+  const trans = cat.translation;
+  if (field === "name") return trans?.name || cat.name;
+  if (field === "description") return trans?.description || cat.description;
+  if (field === "seoTitle") return trans?.seoTitle || cat.seoTitle;
+  if (field === "seoDescription") return trans?.seoDescription || cat.seoDescription;
+  return null;
 }
 
 // === 查询方法 ===
@@ -216,6 +289,7 @@ export async function getProducts(
     categorySlug?: string;
     sortBy?: string;
     channel?: string;
+    locale?: string;
   } = {}
 ): Promise<{ products: Product[]; hasNextPage: boolean; endCursor: string | null; totalCount: number }> {
   const {
@@ -224,13 +298,13 @@ export async function getProducts(
     categorySlug,
     sortBy,
     channel = SALEOR_CHANNEL,
+    locale = "en",
   } = options;
 
-  const filter = categorySlug
-    ? { categories: [categorySlug] }
-    : undefined;
+  const langCode = getLangCode(locale);
+  const filter = categorySlug ? { categories: [categorySlug] } : undefined;
 
-  const data = await saleorClient.request(PRODUCTS_QUERY, {
+  const data = await saleorClient.request(PRODUCTS_QUERY(langCode), {
     first,
     after,
     filter,
@@ -248,17 +322,37 @@ export async function getProducts(
 
 export async function getProductBySlug(
   slug: string,
-  channel: string = SALEOR_CHANNEL
+  options: { channel?: string; locale?: string } = {}
 ): Promise<ProductDetail | null> {
+  const { channel = SALEOR_CHANNEL, locale = "en" } = options;
+  const langCode = getLangCode(locale);
   try {
-    const data = await saleorClient.request(PRODUCT_DETAIL_QUERY, { slug, channel });
+    const data = await saleorClient.request(PRODUCT_DETAIL_QUERY(langCode), { slug, channel });
     return data.product;
   } catch {
     return null;
   }
 }
 
-export async function getCategories(first: number = 50): Promise<Category[]> {
-  const data = await saleorClient.request(CATEGORIES_QUERY, { first });
+export async function getCategories(
+  options: { first?: number; locale?: string } = {}
+): Promise<Category[]> {
+  const { first = 50, locale = "en" } = options;
+  const langCode = getLangCode(locale);
+  const data = await saleorClient.request(CATEGORIES_QUERY(langCode), { first });
   return data.categories.edges.map((edge: { node: Category }) => edge.node);
+}
+
+export async function getCategoryBySlug(
+  slug: string,
+  options: { first?: number; after?: string; channel?: string; locale?: string } = {}
+): Promise<CategoryDetail | null> {
+  const { first = 20, after, channel = SALEOR_CHANNEL, locale = "en" } = options;
+  const langCode = getLangCode(locale);
+  try {
+    const data = await saleorClient.request(CATEGORY_DETAIL_QUERY(langCode), { slug, first, after, channel });
+    return data.category;
+  } catch {
+    return null;
+  }
 }

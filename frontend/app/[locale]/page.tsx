@@ -1,9 +1,10 @@
 import { setRequestLocale } from "next-intl/server";
-import { getProducts, getCategories } from "@/lib/saleor";
+import { getProducts, getCategories, tCategory } from "@/lib/saleor";
 import { useTranslations } from "next-intl";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { SchemaMarkup, organizationSchema } from "@/components/shared/SchemaMarkup";
 import Link from "next/link";
+import type { Category } from "@/lib/saleor";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -12,8 +13,8 @@ export default async function HomePage({ params }: Props) {
   setRequestLocale(locale);
 
   const [productsData, categories] = await Promise.all([
-    getProducts({ first: 8 }).catch(() => ({ products: [], hasNextPage: false, endCursor: null, totalCount: 0 })),
-    getCategories(10).catch(() => []),
+    getProducts({ first: 8, locale }).catch(() => ({ products: [], hasNextPage: false, endCursor: null, totalCount: 0 })),
+    getCategories({ first: 10, locale }).catch(() => []),
   ]);
 
   return (
@@ -24,7 +25,7 @@ export default async function HomePage({ params }: Props) {
   );
 }
 
-function HomeContent({ locale, products, categories }: { locale: string; products: Parameters<typeof ProductGrid>[0]["products"]; categories: { id: string; name: string; slug: string; description: string | null; backgroundImage: { url: string; alt: string | null } | null }[] }) {
+function HomeContent({ locale, products, categories }: { locale: string; products: Parameters<typeof ProductGrid>[0]["products"]; categories: Category[] }) {
   const t = useTranslations("home");
   const common = useTranslations("common");
 
@@ -78,9 +79,9 @@ function HomeContent({ locale, products, categories }: { locale: string; product
                   href={`/${locale}/categories/${cat.slug}`}
                   className="group rounded-lg border bg-white p-6 transition-shadow hover:shadow-lg"
                 >
-                  <h3 className="font-semibold group-hover:text-[var(--color-primary)]">{cat.name}</h3>
-                  {cat.description && (
-                    <p className="mt-2 line-clamp-2 text-sm text-[var(--color-muted)]">{cat.description}</p>
+                  <h3 className="font-semibold group-hover:text-[var(--color-primary)]">{tCategory(cat, "name") || cat.name}</h3>
+                  {(tCategory(cat, "description") || cat.description) && (
+                    <p className="mt-2 line-clamp-2 text-sm text-[var(--color-muted)]">{tCategory(cat, "description") || cat.description}</p>
                   )}
                 </Link>
               ))}
