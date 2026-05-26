@@ -1,0 +1,90 @@
+{
+  "common": {
+    "siteName": "Foreign Trade",
+    "learnMore": "Learn More",
+    "contactUs": "Contact Us",
+    "inquiryNow": "Inquiry Now",
+    "viewAll": "View All",
+    "search": "Search",
+    "loading": "Loading...",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "close": "Close",
+    "back": "Back"
+  },
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "about": "About Us",
+    "contact": "Contact",
+    "categories": "Categories"
+  },
+  "home": {
+    "heroTitle": "Professional Manufacturing Solutions",
+    "heroSubtitle": "Quality products, competitive pricing, global delivery",
+    "featuredProducts": "Featured Products",
+    "categories": "Product Categories",
+    "whyChooseUs": "Why Choose Us"
+  },
+  "product": {
+    "specifications": "Specifications",
+    "moq": "Minimum Order Quantity",
+    "certifications": "Certifications",
+    "inquiryAbout": "Inquiry about this product",
+    "relatedProducts": "Related Products",
+    "description": "Description",
+    "noProducts": "No products found"
+  },
+  "inquiry": {
+    "title": "Product Inquiry",
+    "subtitle": "Fill out the form below and we'll get back to you within 24 hours",
+    "name": "Your Name",
+    "email": "Email Address",
+    "company": "Company Name",
+    "phone": "Phone Number",
+    "quantity": "Quantity Required",
+    "deadline": "Delivery Deadline",
+    "message": "Message",
+    "messagePlaceholder": "Tell us about your requirements...",
+    "submit": "Submit Inquiry",
+    "submitting": "Submitting...",
+    "success": "Thank you! Your inquiry has been submitted. We'll respond within 24 hours.",
+    "error": "Something went wrong. Please try again.",
+    "nameRequired": "Name is required",
+    "emailRequired": "Valid email is required",
+    "messageRequired": "Message is required"
+  },
+  "about": {
+    "title": "About Us",
+    "companyIntro": "Company Introduction",
+    "certifications": "Certifications & Qualifications",
+    "factory": "Our Factory"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "address": "Address",
+    "email": "Email",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated"
+  },
+  "cookie": {
+    "title": "We use cookies",
+    "description": "We use cookies to improve your experience. By continuing to use this site, you agree to our cookie policy.",
+    "necessary": "Necessary",
+    "analytics": "Analytics",
+    "marketing": "Marketing",
+    "accept": "Accept All",
+    "reject": "Reject Non-Essential",
+    "settings": "Cookie Settings"
+  },
+  "footer": {
+    "companyDesc": "Professional manufacturing and trading company",
+    "quickLinks": "Quick Links",
+    "contactInfo": "Contact Info",
+    "copyright": "All rights reserved."
+  }
+}

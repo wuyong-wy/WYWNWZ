@@ -1,0 +1,90 @@
+{
+  "common": {
+    "siteName": "外贸独立站",
+    "learnMore": "了解更多",
+    "contactUs": "联系我们",
+    "inquiryNow": "立即询盘",
+    "viewAll": "查看全部",
+    "search": "搜索",
+    "loading": "加载中...",
+    "submit": "提交",
+    "cancel": "取消",
+    "close": "关闭",
+    "back": "返回"
+  },
+  "nav": {
+    "home": "首页",
+    "products": "产品中心",
+    "about": "关于我们",
+    "contact": "联系我们",
+    "categories": "产品分类"
+  },
+  "home": {
+    "heroTitle": "专业制造解决方案",
+    "heroSubtitle": "优质产品，有竞争力的价格，全球交付",
+    "featuredProducts": "热门产品",
+    "categories": "产品分类",
+    "whyChooseUs": "为什么选择我们"
+  },
+  "product": {
+    "specifications": "产品规格",
+    "moq": "最小起订量",
+    "certifications": "认证资质",
+    "inquiryAbout": "询盘此产品",
+    "relatedProducts": "相关产品",
+    "description": "产品描述",
+    "noProducts": "暂无产品"
+  },
+  "inquiry": {
+    "title": "产品询盘",
+    "subtitle": "填写以下表单，我们将在24小时内回复您",
+    "name": "您的姓名",
+    "email": "电子邮箱",
+    "company": "公司名称",
+    "phone": "联系电话",
+    "quantity": "采购数量",
+    "deadline": "交货期限",
+    "message": "留言",
+    "messagePlaceholder": "请描述您的需求...",
+    "submit": "提交询盘",
+    "submitting": "提交中...",
+    "success": "感谢您的询盘！我们将在24小时内回复您。",
+    "error": "提交失败，请重试。",
+    "nameRequired": "请输入姓名",
+    "emailRequired": "请输入有效的邮箱地址",
+    "messageRequired": "请输入留言"
+  },
+  "about": {
+    "title": "关于我们",
+    "companyIntro": "公司介绍",
+    "certifications": "认证资质",
+    "factory": "工厂展示"
+  },
+  "contact": {
+    "title": "联系我们",
+    "address": "地址",
+    "email": "邮箱",
+    "phone": "电话",
+    "whatsapp": "WhatsApp"
+  },
+  "privacy": {
+    "title": "隐私政策",
+    "lastUpdated": "最后更新"
+  },
+  "cookie": {
+    "title": "我们使用Cookie",
+    "description": "我们使用Cookie来改善您的体验。继续使用本网站即表示您同意我们的Cookie政策。",
+    "necessary": "必要",
+    "analytics": "分析",
+    "marketing": "营销",
+    "accept": "接受全部",
+    "reject": "拒绝非必要",
+    "settings": "Cookie设置"
+  },
+  "footer": {
+    "companyDesc": "专业制造和贸易公司",
+    "quickLinks": "快速链接",
+    "contactInfo": "联系方式",
+    "copyright": "版权所有。"
+  }
+}
