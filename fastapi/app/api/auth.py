@@ -1,6 +1,7 @@
 """管理员 JWT 认证 — 登录端点 + Token 验证依赖"""
 
 import hmac
+import threading
 from datetime import datetime, timedelta, timezone
 
 import jwt
@@ -18,12 +19,15 @@ security = HTTPBearer()
 
 # Redis client for login rate limiting
 _redis_client: redis.Redis | None = None
+_redis_lock = threading.Lock()
 
 
 def _get_redis() -> redis.Redis:
     global _redis_client
     if _redis_client is None:
-        _redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+        with _redis_lock:
+            if _redis_client is None:
+                _redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
     return _redis_client
 
 

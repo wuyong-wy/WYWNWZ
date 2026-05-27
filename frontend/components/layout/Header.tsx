@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useLocale, usePathname, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, X, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +18,19 @@ export function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef<HTMLDivElement>(null);
+
+  // Click outside to close language dropdown
+  useEffect(() => {
+    if (!langOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [langOpen]);
 
   /** 切换语言时保留当前路径：替换 locale 前缀 */
   function getLocaleHref(targetLocale: string): string {
@@ -57,7 +70,7 @@ export function Header() {
         {/* Language Switcher + Mobile Toggle */}
         <div className="flex items-center gap-2">
           {/* Language Switcher */}
-          <div className="relative">
+          <div className="relative" ref={langRef}>
             <button
               onClick={() => setLangOpen(!langOpen)}
               className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-[var(--color-muted)] hover:text-[var(--color-primary)]"

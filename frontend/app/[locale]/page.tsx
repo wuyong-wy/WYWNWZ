@@ -5,6 +5,7 @@ import { ProductGrid } from "@/components/product/ProductGrid";
 import { SchemaMarkup, organizationSchema } from "@/components/shared/SchemaMarkup";
 import Link from "next/link";
 import type { Category } from "@/lib/saleor";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -19,7 +20,7 @@ export default async function HomePage({ params }: Props) {
 
   return (
     <>
-      <SchemaMarkup schema={organizationSchema("Foreign Trade", "https://yourdomain.com")} />
+      <SchemaMarkup schema={organizationSchema(SITE_NAME, SITE_URL)} />
       <HomeContent locale={locale} products={productsData.products} categories={categories} />
     </>
   );

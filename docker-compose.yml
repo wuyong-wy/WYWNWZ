@@ -26,7 +26,7 @@ services:
 
   # === Saleor Dashboard ===
   saleor-dashboard:
-    image: ghcr.io/saleor/saleor-dashboard:latest
+    image: ghcr.io/saleor/saleor-dashboard:3.20.3
     restart: always
     ports:
       - "127.0.0.1:9000:80"
@@ -133,10 +133,12 @@ services:
     ports:
       - "127.0.0.1:6379:6379"
     command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    environment:
+      - REDISCLI_AUTH=${REDIS_PASSWORD}
     volumes:
       - redis-data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5

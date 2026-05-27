@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Cookie, X } from "lucide-react";
 
-const COOKIE_CONSENT_KEY = "cookie_consent";
+const COOKIE_CONSENT_KEY = "cookie_consent_v2";
 
 export function CookieConsent() {
   const t = useTranslations("cookie");

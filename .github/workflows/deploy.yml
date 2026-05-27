@@ -32,6 +32,11 @@ jobs:
       - name: Lint with ruff
         run: ruff check app/ tests/
 
+      - name: Security audit (pip-audit)
+        run: |
+          pip install pip-audit
+          pip-audit -r requirements.txt
+
       - name: Run tests
         run: pytest tests/ -v --tb=short
         env:
@@ -62,6 +67,12 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Security audit (npm)
+        run: npm audit --audit-level=high
 
       - name: Build
         run: npm run build

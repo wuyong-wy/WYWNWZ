@@ -33,7 +33,8 @@
     "inquiryAbout": "询盘此产品",
     "relatedProducts": "相关产品",
     "description": "产品描述",
-    "noProducts": "暂无产品"
+    "noProducts": "暂无产品",
+    "noImages": "暂无图片"
   },
   "inquiry": {
     "title": "产品询盘",
@@ -57,8 +58,14 @@
   "about": {
     "title": "关于我们",
     "companyIntro": "公司介绍",
+    "companyIntroDesc": "我们是一家专业的制造和贸易公司，拥有超过10年为全球市场提供高质量产品的经验。我们对质量、创新和客户满意度的承诺使我们成为全球企业值得信赖的合作伙伴。",
     "certifications": "认证资质",
-    "factory": "工厂展示"
+    "certIso9001": "ISO 9001:2015 质量管理体系",
+    "certIso14001": "ISO 14001:2015 环境管理体系",
+    "certCe": "CE 认证",
+    "certRohs": "RoHS 合规",
+    "factory": "工厂展示",
+    "factoryDesc": "我们先进的制造工厂占地超过20,000平方米，配备先进的生产线和质量控制系统。我们拥有200多名熟练工人，在整个生产过程中保持严格的质量标准。"
   },
   "contact": {
     "title": "联系我们",

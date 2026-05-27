@@ -29,12 +29,12 @@ async def create_inquiry(
     """提交询盘（公开端点，无需认证）"""
     db_inquiry = Inquiry(**inquiry.model_dump())
     db.add(db_inquiry)
-    await db.flush()
+    await db.commit()
     await db.refresh(db_inquiry)
 
     inquiry_id = str(db_inquiry.id)
 
-    # 触发 Celery 异步任务：发送自动回复 + 通知管理员
+    # 事务提交后再触发 Celery 任务，确保 worker 能查到记录
     send_inquiry_auto_reply.delay(inquiry_id)
     send_admin_notification.delay(inquiry_id)
 

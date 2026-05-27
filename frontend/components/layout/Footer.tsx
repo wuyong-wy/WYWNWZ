@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { CONTACT_EMAIL, CONTACT_PHONE } from "@/lib/constants";
 
 export function Footer() {
   const t = useTranslations("footer");
@@ -46,8 +47,8 @@ export function Footer() {
           <div>
             <h4 className="mb-3 font-semibold">{t("contactInfo")}</h4>
             <ul className="space-y-2 text-sm text-[var(--color-muted)]">
-              <li>info@yourdomain.com</li>
-              <li>+86 138-0013-8000</li>
+              <li>{CONTACT_EMAIL}</li>
+              <li>{CONTACT_PHONE}</li>
             </ul>
           </div>
         </div>

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface ProductGalleryProps {
   images: { url: string; alt: string | null; type: string }[];
@@ -10,12 +11,13 @@ interface ProductGalleryProps {
 
 export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const t = useTranslations("product");
   const displayImages = images.length > 0 ? images : [];
 
   if (displayImages.length === 0) {
     return (
       <div className="flex aspect-square items-center justify-center rounded-lg bg-gray-100">
-        <span className="text-gray-400">No images available</span>
+        <span className="text-gray-400">{t("noImages")}</span>
       </div>
     );
   }

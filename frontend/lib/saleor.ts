@@ -23,8 +23,16 @@ const LOCALE_TO_LANG_CODE: Record<string, string> = {
   ko: "KO",
 };
 
+/** 合法语言代码白名单 */
+const VALID_LANG_CODES = new Set(Object.values(LOCALE_TO_LANG_CODE));
+
 function getLangCode(locale: string): string {
-  return LOCALE_TO_LANG_CODE[locale] || "EN";
+  const code = LOCALE_TO_LANG_CODE[locale] || "EN";
+  if (!VALID_LANG_CODES.has(code)) {
+    console.warn(`Invalid language code: ${code}, falling back to EN`);
+    return "EN";
+  }
+  return code;
 }
 
 export const saleorClient = new GraphQLClient(SALEOR_API_URL);
@@ -262,23 +270,18 @@ export interface CategoryDetail extends Omit<Category, "products"> {
 
 // === 辅助函数：获取翻译值，回退到主语言 ===
 
-export function t(product: Product, field: "name" | "description" | "seoTitle" | "seoDescription"): string | null {
-  const trans = product.translation;
-  if (field === "name") return trans?.name || product.name;
-  if (field === "description") return trans?.description || product.description;
-  if (field === "seoTitle") return trans?.seoTitle || product.seoTitle;
-  if (field === "seoDescription") return trans?.seoDescription || product.seoDescription;
-  return null;
+type Translatable = { translation?: Record<string, string | null> };
+type TransField = "name" | "description" | "seoTitle" | "seoDescription";
+
+export function t<T extends Translatable>(
+  item: T & Record<TransField, string | null>,
+  field: TransField
+): string | null {
+  return item.translation?.[field] || item[field];
 }
 
-export function tCategory(cat: Category, field: "name" | "description" | "seoTitle" | "seoDescription"): string | null {
-  const trans = cat.translation;
-  if (field === "name") return trans?.name || cat.name;
-  if (field === "description") return trans?.description || cat.description;
-  if (field === "seoTitle") return trans?.seoTitle || cat.seoTitle;
-  if (field === "seoDescription") return trans?.seoDescription || cat.seoDescription;
-  return null;
-}
+/** @deprecated 使用 t() 代替 */
+export const tCategory = t;
 
 // === 查询方法 ===
 

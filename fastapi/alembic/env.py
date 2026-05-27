@@ -11,7 +11,7 @@ from app.config import settings
 from app.database import Base
 
 # 导入所有模型，确保 Base.metadata 包含所有表
-from app.models import *  # noqa: F401, F403
+from app.models.inquiry import Inquiry, InquiryStatus  # noqa: F401
 
 config = context.config
 

@@ -1,15 +1,18 @@
 import type { Product } from "@/lib/saleor";
 import { ProductCard } from "./ProductCard";
+import { useTranslations } from "next-intl";
 
 interface ProductGridProps {
   products: Product[];
 }
 
 export function ProductGrid({ products }: ProductGridProps) {
+  const t = useTranslations("product");
+
   if (products.length === 0) {
     return (
       <div className="py-12 text-center text-[var(--color-muted)]">
-        No products found
+        {t("noProducts")}
       </div>
     );
   }

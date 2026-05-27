@@ -26,7 +26,14 @@ query GetProductInfo($id: ID!) {
 """)
 
 _transport = HTTPXAsyncTransport(url=settings.SALEOR_GRAPHQL_URL)
-_client = Client(transport=_transport, fetch_schema_from_transport=False)
+_client: Client | None = None
+
+
+def _get_client() -> Client:
+    global _client
+    if _client is None:
+        _client = Client(transport=_transport, fetch_schema_from_transport=False)
+    return _client
 
 
 async def get_product_info(product_id: str) -> dict | None:
@@ -41,7 +48,7 @@ async def get_product_info(product_id: str) -> dict | None:
         查询失败返回 None
     """
     try:
-        async with _client as session:
+        async with _get_client() as session:
             result = await session.execute(
                 GET_PRODUCT_INFO,
                 variable_values={"id": product_id},

@@ -6,6 +6,7 @@ import { ProductGrid } from "@/components/product/ProductGrid";
 import { SchemaMarkup, breadcrumbSchema } from "@/components/shared/SchemaMarkup";
 import Link from "next/link";
 import type { Product } from "@/lib/saleor";
+import { SITE_URL } from "@/lib/constants";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -24,10 +25,10 @@ export async function generateMetadata({ params }: Props) {
     title: seoTitle,
     description: seoDescription,
     alternates: {
-      canonical: `https://yourdomain.com/${locale}/categories/${slug}`,
+      canonical: `${SITE_URL}/${locale}/categories/${slug}`,
       languages: {
-        en: `https://yourdomain.com/en/categories/${slug}`,
-        zh: `https://yourdomain.com/zh/categories/${slug}`,
+        en: `${SITE_URL}/en/categories/${slug}`,
+        zh: `${SITE_URL}/zh/categories/${slug}`,
       },
     },
   };
@@ -46,9 +47,9 @@ export default async function CategoryDetailPage({ params }: Props) {
     <>
       <SchemaMarkup
         schema={breadcrumbSchema([
-          { name: "Home", url: "https://yourdomain.com" },
-          { name: "Categories", url: "https://yourdomain.com/categories" },
-          { name: tCategory(category, "name") || category.name, url: `https://yourdomain.com/categories/${slug}` },
+          { name: "Home", url: SITE_URL },
+          { name: "Categories", url: `${SITE_URL}/categories` },
+          { name: tCategory(category, "name") || category.name, url: `${SITE_URL}/categories/${slug}` },
         ])}
       />
       <CategoryContent

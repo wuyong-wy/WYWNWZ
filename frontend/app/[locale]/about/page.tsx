@@ -26,27 +26,18 @@ function AboutContent({ locale }: { locale: string }) {
 
       <div className="prose prose-lg max-w-none">
         <h2>{t("companyIntro")}</h2>
-        <p>
-          We are a professional manufacturing and trading company with over 10 years of experience
-          in providing high-quality products to global markets. Our commitment to quality, innovation,
-          and customer satisfaction has made us a trusted partner for businesses worldwide.
-        </p>
+        <p>{t("companyIntroDesc")}</p>
 
         <h2>{t("certifications")}</h2>
         <ul>
-          <li>ISO 9001:2015 Quality Management System</li>
-          <li>ISO 14001:2015 Environmental Management System</li>
-          <li>CE Certification</li>
-          <li>RoHS Compliance</li>
+          <li>{t("certIso9001")}</li>
+          <li>{t("certIso14001")}</li>
+          <li>{t("certCe")}</li>
+          <li>{t("certRohs")}</li>
         </ul>
 
         <h2>{t("factory")}</h2>
-        <p>
-          Our state-of-the-art manufacturing facility spans over 20,000 square meters,
-          equipped with advanced production lines and quality control systems.
-          We employ over 200 skilled workers and maintain strict quality standards
-          throughout the production process.
-        </p>
+        <p>{t("factoryDesc")}</p>
       </div>
     </div>
   );

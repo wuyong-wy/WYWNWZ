@@ -5,6 +5,8 @@
 const FASTAPI_URL =
   process.env.NEXT_PUBLIC_FASTAPI_URL || "http://localhost:8001";
 
+const FETCH_TIMEOUT_MS = 15_000;
+
 export interface InquiryPayload {
   saleor_product_id?: string;
   product_name?: string;
@@ -27,18 +29,26 @@ export interface InquiryResponse {
 export async function submitInquiry(
   payload: InquiryPayload
 ): Promise<InquiryResponse> {
-  const response = await fetch(`${FASTAPI_URL}/api/inquiries/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail || `Request failed: ${response.status}`);
+  try {
+    const response = await fetch(`${FASTAPI_URL}/api/inquiries/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.detail || `Request failed: ${response.status}`);
+    }
+
+    return response.json();
+  } finally {
+    clearTimeout(timeout);
   }
-
-  return response.json();
 }

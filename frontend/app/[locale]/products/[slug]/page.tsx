@@ -6,6 +6,8 @@ import { ProductGallery } from "@/components/product/ProductGallery";
 import { InquiryForm } from "@/components/inquiry/InquiryForm";
 import { SchemaMarkup, productSchema, breadcrumbSchema } from "@/components/shared/SchemaMarkup";
 import Link from "next/link";
+import { SITE_URL } from "@/lib/constants";
+import DOMPurify from "dompurify";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -24,10 +26,10 @@ export async function generateMetadata({ params }: Props) {
     title: seoTitle,
     description: seoDescription,
     alternates: {
-      canonical: `https://yourdomain.com/${locale}/products/${slug}`,
+      canonical: `${SITE_URL}/${locale}/products/${slug}`,
       languages: {
-        en: `https://yourdomain.com/en/products/${slug}`,
-        zh: `https://yourdomain.com/zh/products/${slug}`,
+        en: `${SITE_URL}/en/products/${slug}`,
+        zh: `${SITE_URL}/zh/products/${slug}`,
       },
     },
     openGraph: {
@@ -61,12 +63,12 @@ export default async function ProductDetailPage({ params }: Props) {
             slug: product.slug,
             imageUrl: product.thumbnail?.url,
             imageAlt: product.thumbnail?.alt || undefined,
-            siteUrl: "https://yourdomain.com",
+            siteUrl: SITE_URL,
           }),
           breadcrumbSchema([
-            { name: "Home", url: "https://yourdomain.com" },
-            { name: "Products", url: "https://yourdomain.com/products" },
-            { name: displayName, url: `https://yourdomain.com/products/${product.slug}` },
+            { name: "Home", url: SITE_URL },
+            { name: "Products", url: `${SITE_URL}/products` },
+            { name: displayName, url: `${SITE_URL}/products/${product.slug}` },
           ]),
         ]}
       />
@@ -119,7 +121,7 @@ function ProductDetailContent({ product, locale, displayName, displayDescription
               <h2 className="mb-2 text-lg font-semibold">{pt("description")}</h2>
               <div
                 className="prose prose-sm max-w-none text-[var(--color-muted)]"
-                dangerouslySetInnerHTML={{ __html: displayDescription }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(displayDescription) }}
               />
             </div>
           )}
@@ -149,7 +151,7 @@ function ProductDetailContent({ product, locale, displayName, displayDescription
             <InquiryForm
               productId={product.id}
               productName={displayName}
-              sourceUrl={`https://yourdomain.com/${locale}/products/${product.slug}`}
+              sourceUrl={`${SITE_URL}/${locale}/products/${product.slug}`}
             />
           </div>
         </div>

@@ -6,6 +6,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFloat } from "@/components/shared/WhatsAppFloat";
 import { CookieConsent } from "@/components/shared/CookieConsent";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { SITE_URL, SITE_NAME } from "@/lib/constants";
 import "@/app/globals.css";
 
 type Props = {
@@ -21,15 +23,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   return {
     title: {
-      default: "Foreign Trade - Professional Manufacturing Solutions",
-      template: "%s | Foreign Trade",
+      default: `${SITE_NAME} - Professional Manufacturing Solutions`,
+      template: `%s | ${SITE_NAME}`,
     },
     description: "Professional manufacturing and trading company. Quality products, competitive pricing, global delivery.",
     alternates: {
-      canonical: `https://yourdomain.com/${locale}`,
+      canonical: `${SITE_URL}/${locale}`,
       languages: {
-        en: "https://yourdomain.com/en",
-        zh: "https://yourdomain.com/zh",
+        en: `${SITE_URL}/en`,
+        zh: `${SITE_URL}/zh`,
       },
     },
   };
@@ -50,7 +52,9 @@ export default async function LocaleLayout({ children, params }: Props) {
       <body className="min-h-screen antialiased">
         <NextIntlClientProvider messages={messages}>
           <Header />
-          <main className="min-h-[calc(100vh-8rem)]">{children}</main>
+          <ErrorBoundary>
+            <main className="min-h-[calc(100vh-8rem)]">{children}</main>
+          </ErrorBoundary>
           <Footer />
           <WhatsAppFloat />
           <CookieConsent />

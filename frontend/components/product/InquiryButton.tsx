@@ -18,7 +18,7 @@ export function InquiryButton({ productName, onClick }: InquiryButtonProps) {
       className="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-primary-hover)]"
     >
       <MessageSquare className="h-4 w-4" />
-      {productName ? t("inquiryAbout") : t("inquiryAbout")}
+      {t("inquiryAbout")}
     </button>
   );
 }

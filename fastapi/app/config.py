@@ -6,8 +6,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = structlog.get_logger()
 
-_DEFAULT_JWT_SECRET = "change_me_admin_jwt_secret_at_least_32_chars"
-
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -47,22 +45,28 @@ class Settings(BaseSettings):
     # Admin Auth
     ADMIN_USERNAME: str = "admin"
     ADMIN_PASSWORD: str = ""
-    ADMIN_JWT_SECRET: str = _DEFAULT_JWT_SECRET
+    ADMIN_JWT_SECRET: str = ""
     ADMIN_JWT_EXPIRE_MINUTES: int = 1440  # 24 hours
 
     def model_post_init(self, __context) -> None:
         """启动校验：生产环境安全检查"""
-        if not self.DEBUG:
-            if self.ADMIN_JWT_SECRET == _DEFAULT_JWT_SECRET:
+        if not self.ADMIN_JWT_SECRET or len(self.ADMIN_JWT_SECRET) < 32:
+            if not self.DEBUG:
                 raise ValueError(
-                    "ADMIN_JWT_SECRET must be changed from default value in production. "
-                    "Set a secure random string (>= 32 chars) via environment variable."
+                    "ADMIN_JWT_SECRET must be >= 32 chars in production. "
+                    "Set a secure random string via environment variable."
                 )
-            if not self.ADMIN_PASSWORD or len(self.ADMIN_PASSWORD) < 16:
+            else:
                 logger.warning(
-                    "admin_password_insecure",
-                    msg="ADMIN_PASSWORD is empty or shorter than 16 chars. "
-                    "This is insecure for production.",
+                    "admin_jwt_secret_insecure",
+                    msg="Using insecure default JWT secret for development only.",
+                )
+                self.ADMIN_JWT_SECRET = "dev_insecure_jwt_secret_do_not_use_in_prod__"
+        if not self.DEBUG:
+            if not self.ADMIN_PASSWORD or len(self.ADMIN_PASSWORD) < 16:
+                raise ValueError(
+                    "ADMIN_PASSWORD must be set with >= 16 characters in production. "
+                    "Set via ADMIN_PASSWORD environment variable."
                 )
 
 
