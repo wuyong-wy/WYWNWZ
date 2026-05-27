@@ -1,3 +1,5 @@
+const { generateDynamicPaths } = require("./lib/sitemap-paths");
+
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
   siteUrl: "https://yourdomain.com",
@@ -18,7 +20,7 @@ module.exports = {
   additionalPaths: async (config) => {
     const paths = [];
 
-    // 为每个语言版本生成路径
+    // 静态页面路径
     for (const locale of ["en", "zh"]) {
       paths.push({
         loc: `/${locale}`,
@@ -50,6 +52,14 @@ module.exports = {
         priority: 0.3,
         lastmod: new Date().toISOString(),
       });
+    }
+
+    // 动态路径（从 Saleor API 拉取产品/分类 slug）
+    try {
+      const dynamicPaths = await generateDynamicPaths();
+      paths.push(...dynamicPaths);
+    } catch (err) {
+      console.warn("Failed to generate dynamic sitemap paths:", err.message);
     }
 
     return paths;

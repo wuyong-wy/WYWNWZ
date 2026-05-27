@@ -36,6 +36,9 @@ jobs:
         run: pytest tests/ -v --tb=short
         env:
           DATABASE_URL: sqlite+aiosqlite:///./test.db
+          DEBUG: "true"
+          ADMIN_JWT_SECRET: test_jwt_secret_at_least_32_chars!!
+          ADMIN_PASSWORD: test_password_16chars!
 
   # === Frontend: Lint + Build ===
   frontend-check:
@@ -66,6 +69,7 @@ jobs:
           NEXT_PUBLIC_SALEOR_API_URL: ${{ vars.NEXT_PUBLIC_SALEOR_API_URL }}
           NEXT_PUBLIC_FASTAPI_URL: ${{ vars.NEXT_PUBLIC_FASTAPI_URL }}
           NEXT_PUBLIC_WHATSAPP_NUMBER: ${{ vars.NEXT_PUBLIC_WHATSAPP_NUMBER }}
+          NEXT_PUBLIC_SALEOR_CHANNEL: ${{ vars.NEXT_PUBLIC_SALEOR_CHANNEL }}
 
   # === Deploy Backend (only on main push) ===
   deploy-backend:
@@ -88,4 +92,51 @@ jobs:
             docker compose pull fastapi celery-worker celery-beat
             docker compose up -d fastapi celery-worker celery-beat
             docker compose exec fastapi alembic upgrade head
+            docker compose exec nginx nginx -s reload
             echo "Backend deployed at $(date)"
+
+  # === Deploy Frontend to Vercel (only on main push) ===
+  deploy-frontend:
+    needs: frontend-check
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel Environment
+        working-directory: frontend
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build with Vercel
+        working-directory: frontend
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel
+        working-directory: frontend
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+  # === Deploy Notification ===
+  deploy-notification:
+    needs: [deploy-backend, deploy-frontend]
+    if: always() && github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Notify deployment result
+        run: |
+          if [ "${{ needs.deploy-backend.result }}" = "success" ] && [ "${{ needs.deploy-frontend.result }}" = "success" ]; then
+            STATUS="✅ Success"
+          else
+            STATUS="❌ Failed (backend: ${{ needs.deploy-backend.result }}, frontend: ${{ needs.deploy-frontend.result }})"
+          fi
+          echo "Deployment status: $STATUS"
+          # Slack notification (if SLACK_WEBHOOK_URL is configured)
+          if [ -n "${{ secrets.SLACK_WEBHOOK_URL }}" ]; then
+            curl -s -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
+              -H 'Content-Type: application/json' \
+              -d "{\"text\": \"Deploy $STATUS — ${{ github.repository }} @ ${{ github.sha }}\"}"
+          fi

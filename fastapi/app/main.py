@@ -6,6 +6,7 @@ import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.auth import router as auth_router
 from app.api.health import router as health_router
 from app.api.inquiries import router as inquiries_router
 from app.config import settings
@@ -56,4 +57,5 @@ app.add_middleware(
 
 # 路由挂载
 app.include_router(health_router)
+app.include_router(auth_router, prefix="/api")
 app.include_router(inquiries_router, prefix="/api")

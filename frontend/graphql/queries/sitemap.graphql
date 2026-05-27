@@ -1,0 +1,21 @@
+query SitemapProducts($channel: String!) {
+  products(first: 1000, channel: $channel) {
+    edges {
+      node {
+        slug
+        updatedAt
+      }
+    }
+  }
+}
+
+query SitemapCategories {
+  categories(first: 1000) {
+    edges {
+      node {
+        slug
+        updatedAt
+      }
+    }
+  }
+}
