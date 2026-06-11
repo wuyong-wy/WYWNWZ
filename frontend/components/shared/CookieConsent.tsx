@@ -21,8 +21,10 @@ export function CookieConsent() {
     localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({ necessary: true, analytics: true, marketing: true }));
     setVisible(false);
     // 启用 GA4 和 Clarity
-    if (typeof window !== "undefined" && (window as Record<string, unknown>).gtag) {
-      ((window as Record<string, unknown>).gtag as Function)("consent", "update", { analytics_storage: "granted", ad_storage: "granted" });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).gtag("consent", "update", { analytics_storage: "granted", ad_storage: "granted" });
     }
   }
 

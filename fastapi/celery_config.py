@@ -21,7 +21,8 @@ celery_app.conf.update(
     worker_prefetch_multiplier=1,
     task_routes={
         "app.tasks.email.*": {"queue": "email"},
-        "app.tasks.ai.*": {"queue": "ai"},
+        # Phase 2 启用 AI 功能时取消注释：
+        # "app.tasks.ai.*": {"queue": "ai"},
     },
     beat_schedule={
         # 阶段 2：每日竞品监控

@@ -34,10 +34,11 @@ else
     FAIL_COUNT=$((FAIL_COUNT + 1))
 fi
 
-# Redis
+# Redis（通过环境变量传递密码，避免命令行暴露）
 REDIS_PASSWORD=$(grep "^REDIS_PASSWORD=" .env 2>/dev/null | cut -d= -f2 || echo "")
-if docker exec $(docker ps -qf name=redis 2>/dev/null) \
-     redis-cli -a "$REDIS_PASSWORD" ping 2>/dev/null | grep -q PONG; then
+if docker exec -e REDISCLI_AUTH="$REDIS_PASSWORD" \
+     $(docker ps -qf name=redis 2>/dev/null) \
+     redis-cli ping 2>/dev/null | grep -q PONG; then
     echo "  [OK] Redis"
 else
     echo "  [FAIL] Redis"

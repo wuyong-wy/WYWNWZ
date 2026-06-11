@@ -34,12 +34,26 @@ class Base(DeclarativeBase):
     pass
 
 
-async def get_db():
-    """FastAPI 依赖：获取异步数据库会话"""
+# 需要 commit 的 HTTP 方法
+_WRITE_METHODS = frozenset({"POST", "PATCH", "PUT", "DELETE"})
+
+
+async def get_db(request=None):
+    """
+    FastAPI 依赖：获取异步数据库会话
+
+    仅在写操作（POST/PATCH/PUT/DELETE）时自动 commit，
+    GET 等只读请求跳过 commit 以减少不必要的数据库往返。
+    可通过传入 Request 对象或 callable 来检测请求方法。
+    """
     async with async_session() as session:
         try:
             yield session
-            await session.commit()
+            # 有 request 时按方法判断，无 request 时保守 commit（兼容旧代码）
+            if request is None or (
+                hasattr(request, "method") and request.method in _WRITE_METHODS
+            ):
+                await session.commit()
         except Exception:
             await session.rollback()
             raise

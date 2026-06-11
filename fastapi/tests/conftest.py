@@ -11,8 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from app.database import Base, get_db
 from app.main import app
 
-# 测试使用 SQLite 内存数据库
-TEST_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
+# 测试使用 SQLite 内存数据库（并行安全，无文件残留）
+TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
 test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
 test_session = async_sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)

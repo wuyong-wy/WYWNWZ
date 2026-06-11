@@ -10,7 +10,12 @@
     "submit": "Submit",
     "cancel": "Cancel",
     "close": "Close",
-    "back": "Back"
+    "back": "Back",
+    "errorTitle": "Something went wrong!",
+    "errorDescription": "An unexpected error occurred. Please try again.",
+    "tryAgain": "Try Again",
+    "notFound": "Page not found",
+    "backToHome": "Back to Home"
   },
   "nav": {
     "home": "Home",
@@ -53,7 +58,8 @@
     "error": "Something went wrong. Please try again.",
     "nameRequired": "Name is required",
     "emailRequired": "Valid email is required",
-    "messageRequired": "Message is required"
+    "messageRequired": "Message is required",
+    "fieldTooLong": "Maximum {max} characters allowed"
   },
   "about": {
     "title": "About Us",

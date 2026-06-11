@@ -16,9 +16,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverActions: {
-    bodySizeLimit: "2mb",
-  },
+  // serverActions 在 Next.js 15.5+ 默认启用，bodySizeLimit 默认 2MB 无需显式配置
 };
 
 export default withNextIntl(nextConfig);

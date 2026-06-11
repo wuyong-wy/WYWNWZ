@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useLocale, usePathname, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Menu, X, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";

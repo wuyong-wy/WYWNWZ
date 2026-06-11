@@ -4,6 +4,8 @@ import structlog
 from gql import Client, gql
 from gql.transport.httpx import HTTPXAsyncTransport
 
+import httpx
+
 from app.config import settings
 
 logger = structlog.get_logger()
@@ -25,7 +27,10 @@ query GetProductInfo($id: ID!) {
 }
 """)
 
-_transport = HTTPXAsyncTransport(url=settings.SALEOR_GRAPHQL_URL)
+_transport = HTTPXAsyncTransport(
+    url=settings.SALEOR_GRAPHQL_URL,
+    timeout=httpx.Timeout(10.0, connect=5.0),
+)
 _client: Client | None = None
 
 

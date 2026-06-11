@@ -7,7 +7,7 @@ from sqlalchemy import select
 from app.config import settings
 from app.database import SyncSession
 from app.models.inquiry import Inquiry
-from app.services.email import brevo_send
+from app.services.email import brevo_send_sync
 
 logger = structlog.get_logger()
 
@@ -34,7 +34,7 @@ def send_inquiry_auto_reply(self, inquiry_id: str):
 
     template_id = 2 if inquiry.language == "zh" else 1
 
-    success = brevo_send(
+    success = brevo_send_sync(
         to_email=inquiry.customer_email,
         template_id=template_id,
         params={
@@ -60,7 +60,7 @@ def send_admin_notification(self, inquiry_id: str):
         logger.warning("inquiry_not_found", inquiry_id=inquiry_id)
         return
 
-    success = brevo_send(
+    success = brevo_send_sync(
         to_email=settings.ADMIN_EMAIL,
         template_id=3,  # 管理员通知模板
         params={

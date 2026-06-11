@@ -13,6 +13,16 @@ interface InquiryFormProps {
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
+/** 字段长度限制（与 Pydantic Schema 保持一致） */
+const MAX_LENGTHS: Record<string, number> = {
+  customer_name: 255,
+  customer_email: 254,
+  customer_company: 500,
+  customer_phone: 50,
+  quantity: 255,
+  delivery_deadline: 255,
+};
+
 export function InquiryForm({ productId, productName, sourceUrl }: InquiryFormProps) {
   const t = useTranslations("inquiry");
   const locale = useLocale();
@@ -33,9 +43,17 @@ export function InquiryForm({ productId, productName, sourceUrl }: InquiryFormPr
   function validate(): boolean {
     const newErrors: Record<string, string> = {};
     if (!form.customer_name.trim()) newErrors.customer_name = t("nameRequired");
+    else if (form.customer_name.length > MAX_LENGTHS.customer_name)
+      newErrors.customer_name = t("nameRequired");
     if (!form.customer_email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.customer_email))
       newErrors.customer_email = t("emailRequired");
     if (!form.message.trim()) newErrors.message = t("messageRequired");
+    // 字段长度校验（对齐后端 Pydantic max_length）
+    for (const [field, maxLen] of Object.entries(MAX_LENGTHS)) {
+      if (form[field as keyof typeof form] && form[field as keyof typeof form].length > maxLen) {
+        newErrors[field] = t("fieldTooLong", { max: maxLen });
+      }
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }
@@ -90,6 +108,7 @@ export function InquiryForm({ productId, productName, sourceUrl }: InquiryFormPr
             type="text"
             value={form.customer_name}
             onChange={(e) => setForm({ ...form, customer_name: e.target.value })}
+            maxLength={MAX_LENGTHS.customer_name}
             className="w-full rounded-md border px-3 py-2 text-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
           />
           {errors.customer_name && <p className="mt-1 text-xs text-red-500">{errors.customer_name}</p>}
@@ -104,6 +123,7 @@ export function InquiryForm({ productId, productName, sourceUrl }: InquiryFormPr
             type="email"
             value={form.customer_email}
             onChange={(e) => setForm({ ...form, customer_email: e.target.value })}
+            maxLength={MAX_LENGTHS.customer_email}
             className="w-full rounded-md border px-3 py-2 text-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
           />
           {errors.customer_email && <p className="mt-1 text-xs text-red-500">{errors.customer_email}</p>}
@@ -116,6 +136,7 @@ export function InquiryForm({ productId, productName, sourceUrl }: InquiryFormPr
             type="text"
             value={form.customer_company}
             onChange={(e) => setForm({ ...form, customer_company: e.target.value })}
+            maxLength={MAX_LENGTHS.customer_company}
             className="w-full rounded-md border px-3 py-2 text-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
           />
         </div>
@@ -127,6 +148,7 @@ export function InquiryForm({ productId, productName, sourceUrl }: InquiryFormPr
             type="tel"
             value={form.customer_phone}
             onChange={(e) => setForm({ ...form, customer_phone: e.target.value })}
+            maxLength={MAX_LENGTHS.customer_phone}
             className="w-full rounded-md border px-3 py-2 text-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
           />
         </div>
@@ -138,6 +160,7 @@ export function InquiryForm({ productId, productName, sourceUrl }: InquiryFormPr
             type="text"
             value={form.quantity}
             onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+            maxLength={MAX_LENGTHS.quantity}
             placeholder="e.g. 1000-5000 pcs"
             className="w-full rounded-md border px-3 py-2 text-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
           />
@@ -150,6 +173,7 @@ export function InquiryForm({ productId, productName, sourceUrl }: InquiryFormPr
             type="text"
             value={form.delivery_deadline}
             onChange={(e) => setForm({ ...form, delivery_deadline: e.target.value })}
+            maxLength={MAX_LENGTHS.delivery_deadline}
             placeholder="e.g. 30 days"
             className="w-full rounded-md border px-3 py-2 text-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
           />

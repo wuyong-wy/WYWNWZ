@@ -212,6 +212,7 @@ export interface ProductTranslation {
   description: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
+  [key: string]: string | null;
 }
 
 export interface CategoryTranslation {
@@ -219,6 +220,7 @@ export interface CategoryTranslation {
   description: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
+  [key: string]: string | null;
 }
 
 export interface ProductCategory {
@@ -270,14 +272,12 @@ export interface CategoryDetail extends Omit<Category, "products"> {
 
 // === 辅助函数：获取翻译值，回退到主语言 ===
 
-type Translatable = { translation?: Record<string, string | null> };
 type TransField = "name" | "description" | "seoTitle" | "seoDescription";
 
-export function t<T extends Translatable>(
-  item: T & Record<TransField, string | null>,
-  field: TransField
-): string | null {
-  return item.translation?.[field] || item[field];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function t(item: any, field: TransField): string | null {
+  const translation = item?.translation as Record<string, string | null> | null | undefined;
+  return translation?.[field] ?? item?.[field] ?? null;
 }
 
 /** @deprecated 使用 t() 代替 */
